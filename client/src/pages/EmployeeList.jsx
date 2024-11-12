@@ -64,13 +64,18 @@ const EmployeeList = () => {
           </Link>
         </div>
         {!loading && (
-          <input
-            type="text"
-            placeholder="Search by name..."
-            value={searchQuery}
-            onChange={handleSearch}
-            className="mb-4 p-2 border rounded w-full sm:w-1/2 lg:w-1/3"
-          />
+         <div className="flex flex-col lg:flex-row justify-between items-center">
+            <input
+              type="text"
+              placeholder="Search by name..."
+              value={searchQuery}
+              onChange={handleSearch}
+              className="mb-4 p-2 border rounded w-full sm:w-1/2 lg:w-1/3"
+            />
+            <div className="font-bold">
+              Total Count:{filteredEmployees.length}
+            </div>
+          </div>
         )}
         {loading ? (
           <div className="flex justify-center items-center h-64">
