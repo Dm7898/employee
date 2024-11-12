@@ -18,7 +18,7 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use(express.json());
 
 const corsOptions = {
-  origin: "http://localhost:5173",
+  origin: "https://employee-fe.onrender.com/",
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
 };
