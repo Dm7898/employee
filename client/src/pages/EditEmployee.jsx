@@ -164,6 +164,8 @@ const EditEmployee = () => {
             <input
               type="text"
               name="mobile"
+              minLength={10}
+              maxLength={10}
               value={employee.mobile}
               onChange={handleChange}
               required
