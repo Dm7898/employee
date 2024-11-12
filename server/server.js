@@ -14,8 +14,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
-// Middleware
-app.use(express.json());
+
 
 const allowedOrigins = [
   "https://employee-fe.onrender.com" 
@@ -32,6 +31,7 @@ const corsOptions = {
   credentials: true, 
 };
 app.use(cors(corsOptions));
+app.use(express.json());
 
 // MongoDB connection
 const connectDB = async () => {
