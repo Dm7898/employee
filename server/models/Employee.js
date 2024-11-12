@@ -23,6 +23,7 @@ const employeeSchema = new mongoose.Schema({
     type: String,
     unique: true,
     required: [true, "Email is required"],
+    lowercase: true,
     validate: {
       validator: function (v) {
         return emailRegex.test(v); // Validates email format
@@ -55,7 +56,6 @@ const employeeSchema = new mongoose.Schema({
   },
   courses: {
     type: [String],
-    enum: ["mca", "bca", "bsc"],
     required: [true, "Course is required"],
   },
   createdAt: {

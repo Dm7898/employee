@@ -1,9 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { Link } from "react-router-dom";
 import { api } from "../api";
 import Layout from "../components/Layout";
+import { CoursesContext } from "../CoursesContext"; // Import CoursesContext
 
 const EmployeeList = () => {
+  const { courses } = useContext(CoursesContext); // Access courses from the context
   const [employees, setEmployees] = useState([]);
   const [filteredEmployees, setFilteredEmployees] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -15,7 +17,6 @@ const EmployeeList = () => {
         setLoading(true);
         const response = await api.get("/api/employee/list");
         setEmployees(response.data);
-        console.log(response.data);
         setFilteredEmployees(response.data);
       } catch (error) {
         console.error("Error fetching employees:", error);
@@ -49,6 +50,14 @@ const EmployeeList = () => {
     }
   };
 
+  // Function to map course IDs to course names
+  const getCourseNames = (courseIds) => {
+    return courseIds.map((courseId) => {
+      const course = courses.find((course) => course._id === courseId);
+      return course ? course.course : "Unknown Course"; // Fallback to "Unknown Course" if not found
+    });
+  };
+
   return (
     <Layout>
       <div className="p-4 sm:p-6 bg-gray-100 min-h-screen">
@@ -64,7 +73,15 @@ const EmployeeList = () => {
           </Link>
         </div>
         {!loading && (
+<<<<<<< HEAD
          <div className="flex flex-col lg:flex-row justify-between items-center">
+=======
+<<<<<<< HEAD
+         <div className="flex flex-col lg:flex-row justify-between items-center">
+=======
+          <div className="flex flex-col lg:flex-row justify-between items-center">
+>>>>>>> 1b76177 (updated one)
+>>>>>>> 2a0d05a (Update EmployeeList.jsx)
             <input
               type="text"
               placeholder="Search by name..."
@@ -73,7 +90,15 @@ const EmployeeList = () => {
               className="mb-4 p-2 border rounded w-full sm:w-1/2 lg:w-1/3"
             />
             <div className="font-bold">
+<<<<<<< HEAD
               Total Count:{filteredEmployees.length}
+=======
+<<<<<<< HEAD
+              Total Count:{filteredEmployees.length}
+=======
+              Total Count: {filteredEmployees.length}
+>>>>>>> 1b76177 (updated one)
+>>>>>>> 2a0d05a (Update EmployeeList.jsx)
             </div>
           </div>
         )}
@@ -140,7 +165,8 @@ const EmployeeList = () => {
                       {employee.gender}
                     </td>
                     <td className="p-2 border-b">
-                      {employee.courses.join(", ")}
+                      {/* Map the course IDs to course names */}
+                      {getCourseNames(employee.courses).join(", ")}
                     </td>
                     <td className="p-2 border-b">
                       {new Date(employee.createdAt).toLocaleDateString()}

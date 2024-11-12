@@ -1,25 +1,57 @@
-import { useState } from "react";
-import { api } from "../api";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect, useContext } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { CoursesContext } from "../CoursesContext"; // Import the CoursesContext to get the list of courses
 import Layout from "../components/Layout";
+import { api } from "../api"; // Adjust according to your API setup
 
 const EmployeeForm = () => {
   const navigate = useNavigate();
+  const { id } = useParams();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [mobile, setMobile] = useState("");
   const [designation, setDesignation] = useState("hr");
   const [gender, setGender] = useState("male");
-  const [courses, setCourses] = useState([]);
+  const [selectedCourses, setSelectedCourses] = useState([]);
   const [image, setImage] = useState(null);
+
+  // Fetch courses from the context
+  const { courses } = useContext(CoursesContext);
+
+  // Fetch employee details if editing
+  useEffect(() => {
+    if (id) {
+      const fetchEmployeeDetails = async () => {
+        try {
+          const response = await api.get(`/api/employee/${id}`);
+          const employee = response.data;
+          setName(employee.name);
+          setEmail(employee.email);
+          setMobile(employee.mobile);
+          setDesignation(employee.designation);
+          setGender(employee.gender);
+          setSelectedCourses(employee.courses); // Pre-select courses if editing
+        } catch (error) {
+          console.error("Error fetching employee details:", error);
+        }
+      };
+      fetchEmployeeDetails();
+    }
+  }, [id]);
 
   const handleCourseChange = (e) => {
     const value = e.target.value;
-    setCourses((prevCourses) =>
-      prevCourses.includes(value)
-        ? prevCourses.filter((course) => course !== value)
-        : [...prevCourses, value]
-    );
+    const selectedCourse = courses.find((course) => course._id === value);
+
+    setSelectedCourses((prevCourses) => {
+      if (prevCourses.includes(selectedCourse)) {
+        return prevCourses.filter(
+          (course) => course._id !== selectedCourse._id
+        );
+      } else {
+        return [...prevCourses, selectedCourse];
+      }
+    });
   };
 
   const handleImageChange = (e) => {
@@ -29,13 +61,12 @@ const EmployeeForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Mobile validation for 10 digits, starting with 7, 8, or 9
     const mobileRegex = /^[789]\d{9}$/;
     if (!mobileRegex.test(mobile)) {
       alert("Please enter a valid mobile number starting with 7, 8, or 9.");
       return;
     }
-    if (courses.length === 0) {
+    if (selectedCourses.length === 0) {
       alert("Please select at least one course.");
       return;
     }
@@ -46,20 +77,28 @@ const EmployeeForm = () => {
     formData.append("mobile", mobile);
     formData.append("designation", designation);
     formData.append("gender", gender);
-    courses.forEach((course) => formData.append("courses", course));
+    selectedCourses.forEach((course) => formData.append("courses", course._id)); // Use course _id
     if (image) formData.append("image", image);
 
     try {
-      const response = await api.post("/api/employee/create", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-      alert("employee created successfuly");
+      if (id) {
+        await api.put(`/api/employee/update/${id}`, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
+        alert("Employee updated successfully");
+      } else {
+        await api.post("/api/employee/create", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
+        alert("Employee created successfully");
+      }
       navigate("/employee-list");
-      console.log(response.data);
     } catch (error) {
-      console.error("Error uploading employee:", error);
+      console.error("Error submitting employee:", error);
     }
   };
 
@@ -67,7 +106,7 @@ const EmployeeForm = () => {
     <Layout>
       <div className="p-6 m-auto bg-white rounded shadow-md w-full sm:w-3/4 md:w-1/2 lg:w-1/3">
         <h2 className="text-xl text-center font-semibold mb-4">
-          Employee Form
+          {id ? "Edit Employee" : "Create Employee"}
         </h2>
         <form onSubmit={handleSubmit}>
           {/* Name */}
@@ -150,50 +189,41 @@ const EmployeeForm = () => {
           {/* Course Checkboxes */}
           <fieldset className="mb-3 flex space-x-2 flex-wrap">
             <legend>Course:</legend>
-            <label className="flex items-center mb-2">
-              <input
-                type="checkbox"
-                value="mca"
-                checked={courses.includes("mca")}
-                onChange={handleCourseChange}
-                className="mr-1"
-              />
-              MCA
-            </label>
-            <label className="flex items-center mb-2">
-              <input
-                type="checkbox"
-                value="bca"
-                checked={courses.includes("bca")}
-                onChange={handleCourseChange}
-                className="mr-1"
-              />
-              BCA
-            </label>
-            <label className="flex items-center mb-2">
-              <input
-                type="checkbox"
-                value="bsc"
-                checked={courses.includes("bsc")}
-                onChange={handleCourseChange}
-                className="mr-1"
-              />
-              BSc
-            </label>
+            {courses.length === 0 ? (
+              <p>Loading courses...</p>
+            ) : (
+              courses.map((item) => (
+                <label key={item._id} className="flex items-center mb-2">
+                  <input
+                    type="checkbox"
+                    value={item._id} // Use _id here instead of course name
+                    checked={selectedCourses.some(
+                      (course) => course._id === item._id
+                    )} // Check if course is selected
+                    onChange={handleCourseChange}
+                    className="mr-1"
+                  />
+                  {item.course[0].toUpperCase() + item.course.slice(1)}
+                </label>
+              ))
+            )}
           </fieldset>
 
           {/* Image Upload */}
-          <label className="block mb-4">
+          <label className="block mb-2">
             Image:
-            <input type="file" onChange={handleImageChange} className="mt-1" />
+            <input
+              type="file"
+              onChange={handleImageChange}
+              className="w-full p-2 mt-1"
+            />
           </label>
 
-          {/* Submit Button */}
           <button
             type="submit"
-            className="w-full p-2 text-white bg-blue-500 rounded hover:bg-blue-600"
+            className="w-full p-2 bg-blue-600 text-white rounded"
           >
-            Submit
+            {id ? "Update Employee" : "Create Employee"}
           </button>
         </form>
       </div>

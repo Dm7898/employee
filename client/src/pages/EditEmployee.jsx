@@ -1,16 +1,21 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useContext } from "react";
 import { api } from "../api";
 import { useParams, useNavigate } from "react-router-dom";
 import Layout from "../components/Layout";
+import { CoursesContext } from "../CoursesContext"; // Import CoursesContext
 
 const EditEmployee = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [employee, setEmployee] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [selectedCourses, setSelectedCourses] = useState([]);
   const [error, setError] = useState(null);
   const [image, setImage] = useState(null);
   const initialEmployeeData = useRef(null);
+
+  // Access the courses from context
+  const { courses } = useContext(CoursesContext);
 
   // Fetch employee data when component mounts
   useEffect(() => {
@@ -20,7 +25,8 @@ const EditEmployee = () => {
           `http://localhost:5000/api/employee/${id}`
         );
         setEmployee(response.data);
-        initialEmployeeData.current = response.data; // Store initial data
+        setSelectedCourses(response.data.courses);
+        initialEmployeeData.current = response.data;
       } catch (err) {
         setError("Error fetching employee details");
         console.error("Error fetching details", err);
@@ -35,12 +41,25 @@ const EditEmployee = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (selectedCourses.length === 0) {
+      alert("Please select at least one course.");
+      return;
+    }
+
     // Check if there are any changes made
     const isChanged = Object.keys(employee).some(
       (key) =>
-        key !== "image" && employee[key] !== initialEmployeeData.current[key]
+        key !== "image" &&
+        key !== "courses" && // Skip the courses field for comparison
+        employee[key] !== initialEmployeeData.current[key]
     );
-    if (!isChanged && image === null) {
+
+    // Compare selected courses with initial courses
+    const isCoursesChanged =
+      JSON.stringify(selectedCourses) !==
+      JSON.stringify(initialEmployeeData.current.courses);
+
+    if (!isChanged && !isCoursesChanged && image === null) {
       alert("No changes were made.");
       return;
     }
@@ -51,7 +70,7 @@ const EditEmployee = () => {
     formData.append("mobile", employee.mobile);
     formData.append("designation", employee.designation);
     formData.append("gender", employee.gender);
-    formData.append("courses", employee.courses);
+    formData.append("courses", selectedCourses); // Include the selected courses
     if (image) {
       formData.append("image", image);
     }
@@ -72,12 +91,10 @@ const EditEmployee = () => {
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     if (type === "checkbox") {
-      setEmployee((prevEmployee) => {
-        const updatedCourses = checked
-          ? [...prevEmployee.courses, value]
-          : prevEmployee.courses.filter((course) => course !== value);
-        return { ...prevEmployee, [name]: updatedCourses };
-      });
+      const updatedCourses = checked
+        ? [...selectedCourses, value]
+        : selectedCourses.filter((course) => course !== value);
+      setSelectedCourses(updatedCourses);
     } else {
       setEmployee((prevEmployee) => ({
         ...prevEmployee,
@@ -223,52 +240,35 @@ const EditEmployee = () => {
           </div>
 
           {/* Courses (Checkboxes) */}
-          <div>
-            <label className="block text-lg font-medium text-gray-700">
-              Courses
-            </label>
-            <div className="flex flex-wrap space-x-4">
-              <label className="flex items-center">
-                <input
-                  type="checkbox"
-                  name="courses"
-                  value="mca"
-                  checked={employee.courses.includes("mca")}
-                  onChange={handleChange}
-                  className="mr-2"
-                />
-                MCA
-              </label>
-              <label className="flex items-center">
-                <input
-                  type="checkbox"
-                  name="courses"
-                  value="bca"
-                  checked={employee.courses.includes("bca")}
-                  onChange={handleChange}
-                  className="mr-2"
-                />
-                BCA
-              </label>
-              <label className="flex items-center">
-                <input
-                  type="checkbox"
-                  name="courses"
-                  value="bsc"
-                  checked={employee.courses.includes("bsc")}
-                  onChange={handleChange}
-                  className="mr-2"
-                />
-                BSc
-              </label>
-            </div>
-          </div>
+          <fieldset className="mb-3 flex space-x-2 flex-wrap">
+            <legend>Course:</legend>
+            {courses.length === 0 ? (
+              <p>Loading courses...</p>
+            ) : (
+              courses.map((item) => (
+                <label
+                  key={item._id}
+                  className="inline-flex items-center space-x-2"
+                >
+                  <input
+                    type="checkbox"
+                    name="courses"
+                    value={item._id}
+                    checked={selectedCourses.includes(item._id)}
+                    onChange={handleChange}
+                    className="w-5 h-5 border-gray-300 rounded"
+                  />
+                  <span>{item.course}</span>
+                </label>
+              ))
+            )}
+          </fieldset>
 
           {/* Submit Button */}
           <div className="text-center">
             <button
               type="submit"
-              className="w-full px-6 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               Save Changes
             </button>

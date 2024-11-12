@@ -38,6 +38,12 @@ const Layout = ({ children }) => {
           >
             Employee List
           </Link>
+          <Link
+            to="/course-table"
+            className="hover:underline text-sm sm:text-base md:text-lg"
+          >
+            Course Master
+          </Link>
         </div>
 
         <div className="flex flex-col md:flex-row items-center space-y-2 md:space-y-0 md:space-x-4 mt-2 md:mt-0">

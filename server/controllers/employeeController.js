@@ -105,6 +105,9 @@ export const updateEmployee = async (req, res) => {
   if (image) {
     updates.image = image; // Add the image to the update object if a new file is uploaded
   }
+  if (typeof updates.courses === "string") {
+    updates.courses = updates.courses.split(",").map((course) => course.trim());
+  }
 
   try {
     const employee = await Employee.findByIdAndUpdate(id, updates, {

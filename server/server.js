@@ -6,6 +6,7 @@ import dotenv from "dotenv";
 import cors from "cors";
 import authRoutes from "./routes/authRoutes.js";
 import employeeRoutes from "./routes/employeeRoutes.js";
+import courseRoutes from "./routes/courseRoutes.js";
 
 dotenv.config();
 
@@ -50,6 +51,7 @@ const connectDB = async () => {
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/employee", employeeRoutes);
+app.use("/api/course", courseRoutes);
 // Basic route for server status check
 app.get("/", (req, res) => {
   res.send("Server is running");
