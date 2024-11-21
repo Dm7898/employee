@@ -136,7 +136,7 @@ const EmployeeList = () => {
                     <td className="p-2 border-b">{employee._id}</td>
                     <td className="p-2 border-b">
                       <img
-                        src={`${employee.image}`}
+                        src={`https://employee-1-po53.onrender.com${employee.image}`}
                         alt={employee.name}
                         className="w-12 h-12 object-cover rounded-full"
                       />
