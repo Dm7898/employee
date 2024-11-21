@@ -141,7 +141,7 @@ const EditEmployee = () => {
               {employee?.image && (
                 <div>
                   <img
-                    src={`http://localhost:5000${employee.image}`} // Adjust URL as needed
+                    src={`https://employee-1-po53.onrender.com${employee.image}`} // Adjust URL as needed
                     alt="Current Profile"
                     className="w-20 h-20 object-cover rounded-full border border-gray-300"
                   />
