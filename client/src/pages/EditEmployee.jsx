@@ -21,9 +21,7 @@ const EditEmployee = () => {
   useEffect(() => {
     const fetchEmployee = async () => {
       try {
-        const response = await api.get(
-          `http://localhost:5000/api/employee/${id}`
-        );
+        const response = await api.get(`/api/employee/${id}`);
         setEmployee(response.data);
         setSelectedCourses(response.data.courses);
         initialEmployeeData.current = response.data;
