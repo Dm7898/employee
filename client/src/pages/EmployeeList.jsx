@@ -40,7 +40,7 @@ const EmployeeList = () => {
   // Handle delete action
   const handleDelete = async (id) => {
     try {
-      await api.delete(`http://localhost:5000/api/employee/delete/${id}`);
+      await api.delete(`/api/employee/delete/${id}`);
       setEmployees(employees.filter((employee) => employee._id !== id));
       setFilteredEmployees(
         filteredEmployees.filter((employee) => employee._id !== id)
@@ -136,7 +136,7 @@ const EmployeeList = () => {
                     <td className="p-2 border-b">{employee._id}</td>
                     <td className="p-2 border-b">
                       <img
-                        src={`http://localhost:5000${employee.image}`}
+                        src={`${employee.image}`}
                         alt={employee.name}
                         className="w-12 h-12 object-cover rounded-full"
                       />
