@@ -73,15 +73,7 @@ const EmployeeList = () => {
           </Link>
         </div>
         {!loading && (
-<<<<<<< HEAD
-         <div className="flex flex-col lg:flex-row justify-between items-center">
-=======
-<<<<<<< HEAD
-         <div className="flex flex-col lg:flex-row justify-between items-center">
-=======
           <div className="flex flex-col lg:flex-row justify-between items-center">
->>>>>>> 1b76177 (updated one)
->>>>>>> 2a0d05a (Update EmployeeList.jsx)
             <input
               type="text"
               placeholder="Search by name..."
@@ -90,15 +82,7 @@ const EmployeeList = () => {
               className="mb-4 p-2 border rounded w-full sm:w-1/2 lg:w-1/3"
             />
             <div className="font-bold">
-<<<<<<< HEAD
-              Total Count:{filteredEmployees.length}
-=======
-<<<<<<< HEAD
-              Total Count:{filteredEmployees.length}
-=======
               Total Count: {filteredEmployees.length}
->>>>>>> 1b76177 (updated one)
->>>>>>> 2a0d05a (Update EmployeeList.jsx)
             </div>
           </div>
         )}

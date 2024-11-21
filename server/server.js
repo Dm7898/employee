@@ -16,10 +16,7 @@ const __dirname = path.dirname(__filename);
 
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
-
-const allowedOrigins = [
-  "https://employee-fe.onrender.com" 
-];
+const allowedOrigins = ["http://localhost:5173"];
 
 const corsOptions = {
   origin: function (origin, callback) {
@@ -29,7 +26,7 @@ const corsOptions = {
       callback(new Error("Not allowed by CORS"));
     }
   },
-  credentials: true, 
+  credentials: true,
 };
 app.use(cors(corsOptions));
 app.use(express.json());
